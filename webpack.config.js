@@ -2,7 +2,7 @@ const HtmlWebPackPlugin = require("html-webpack-plugin");
 const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
 
 const deps = require("./package.json").dependencies;
-module.exports = {
+module.exports =(env,argv)=> ({
   output: {
     publicPath: "http://localhost:3001/",
   },
@@ -44,7 +44,7 @@ module.exports = {
       name: "onboarding",
       filename: "remoteEntry.js",
       remotes: {
-        host:'host@http://localhost:3000/remoteEntry.js'
+        host:`host@${argv.mode === "production"?'https://gentle-melomakarona-3566dd.netlify.app/':'http://localhost:3000/'}remoteEntry.js`
       },
       exposes: {
         "./Onboarding":"./src/pages/Onboarding",
@@ -66,4 +66,4 @@ module.exports = {
       template: "./src/index.html",
     }),
   ],
-};
+});
