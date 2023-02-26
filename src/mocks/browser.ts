@@ -1,5 +1,6 @@
 import { rest, setupWorker } from 'msw';
-
+import { handlers } from './handler';
+ 
 const getUser = rest.get('/user',(_req, res, ctx) => {
     return res(
       ctx.json({
@@ -111,4 +112,6 @@ const getUser = rest.get('/user',(_req, res, ctx) => {
     }))
   })
 
-export const worker = setupWorker(getUser,getJobFunctionOptions,getOnboardingQuestions,getProductOptions);
+// export const worker = setupWorker(getUser,getJobFunctionOptions,getOnboardingQuestions,getProductOptions);
+export const worker = setupWorker(...handlers)
+

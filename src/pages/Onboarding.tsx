@@ -1,41 +1,56 @@
-import React, { useEffect, useState } from 'react'
-import { CompanyDetails, ImageBanner, IntentSelection, JobFunction, ProductInfo, WelcomeUser } from "../components"
-import "../index.scss"
-import { OnboardingQuestions } from "../types/question"
+import { gql, request } from "graphql-request";
+import React, { useState } from 'react';
+import { useQuery } from 'react-query';
+import { CompanyDetails, ImageBanner, IntentSelection, JobFunction, ProductInfo, WelcomeUser } from "../components";
+import "../index.scss";
+import { OnboardingQuestions } from "../types/question";
 const Onboarding = () => {
     const [user, setUser] = useState<{ id: number, name: string } | null>(null)
     const [jobOptions, setJobOptions] = useState([])
     const [onboardingQuestion, setOnboardingQuestion] = useState<OnboardingQuestions>()
     const [productOption, setProductOption] = useState()
     const [page, setPage] = useState(0)
-    useEffect(() => {
-        (async () => {
-            // turning on the mock server
-            // Be careful not to visit before the mock server is turned on.
-            const { worker } = await import('../mocks/browser');
-            worker.start();
+    // useEffect(() => {
+    //     (async () => {
+    //         // turning on the mock server
+    //         // Be careful not to visit before the mock server is turned on.
+    //         const { worker } = await import('../mocks/browser');
+    //         worker.start();
 
-            // getting the data
-            const users = await fetch('/user');
-            const userData = await users.json();
-            setUser(userData);
+    //         // getting the data
+    //         const users = await fetch('/user');
+    //         const userData = await users.json();
+    //         setUser(userData);
 
-            const jobOptions = await fetch('/jobFunction')
-            const jobOptionData = await jobOptions.json()
-            setJobOptions(jobOptionData.options)
+    //         const jobOptions = await fetch('/jobFunction')
+    //         const jobOptionData = await jobOptions.json()
+    //         setJobOptions(jobOptionData.options)
 
-            const onboardingQuestion = await fetch('/onboardingQuestions')
-            const onboardingQuestionData = await onboardingQuestion.json()
-            setOnboardingQuestion(onboardingQuestionData)
+    //         const onboardingQuestion = await fetch('/onboardingQuestions')
+    //         const onboardingQuestionData = await onboardingQuestion.json()
+    //         setOnboardingQuestion(onboardingQuestionData)
 
-            const productOptions = await fetch('/getProductsOptions')
-            const productOptionsData = await productOptions.json()
-            console.log(productOptionsData)
-            setProductOption(productOptionsData.options)
+    //         const productOptions = await fetch('/getProductsOptions')
+    //         const productOptionsData = await productOptions.json()
+    //         console.log(productOptionsData)
+    //         setProductOption(productOptionsData.options)
 
-        })();
-    }, []);
-    console.log(productOption)
+    //     })();
+    // }, []);
+    const endpoint = "http://localhost:3001/graphql";
+    const USER_QUERY = gql`
+      {
+        user{
+            firstname
+        }
+      }
+    `;
+    const { data, isLoading, error } = useQuery("launches", () => {
+        return request(endpoint, USER_QUERY);
+    });
+    console.log(data)
+
+
     function renderPage(page: number) {
         switch (page) {
             case 0:
